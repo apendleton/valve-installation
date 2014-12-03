@@ -8,7 +8,7 @@ from gevent.event import Event
 from gevent import Greenlet
 
 # change to your Arduino serial device
-port = '/dev/tty.usbmodem641'
+port = '/dev/tty.usbmodem411'
 
 distance = [list((100, 100)) for i in xrange(6)]
 real_on = [list((False, False)) for i in xrange(6)]
@@ -119,6 +119,10 @@ def status():
                 for i in xrange(2)] for j in xrange(6)],
         'most_recent_on': {'stick': most_recent_on[0], 'height': most_recent_on[1]}
     })
+
+@app.route('/reset')
+def reset():
+    kill_stale_fakes()
 
 @sockets.route('/changes') 
 def changes(ws):
