@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript">
+(function() {
+    var update = function() {
+        $.getJSON("/status", function(data) {
+            for (var i = 0; i < 6; i++) {
+                for (var j = 0; j < 2; j++) {
+                    var cell = $('#' + i + '-' + j);
+                    var dist = data.distances[i][j];
+                    cell.toggleClass('on', dist.on);
+                    cell.toggleClass('off', !dist.on);
+                    cell.toggleClass('real-on', data.distances[i][j].real_on);
+                    cell.toggleClass('real-off', !data.distances[i][j].real_on);
+                    ('class', data.distances[i][j].on ? 'on' : 'off');
+                }
+            }
+        })
+    }
+    update();
+    var socket = new WebSocket("ws://" + window.location.hostname + ":5000/changes");
+    socket.onmessage = function (event) {
+        console.log(event.data);
+        update();
+    }
+})();
+        </script>
+        <style type="text/css">
+            td {
+                width: 80px;
+                height: 80px;
+            }
+            td.on {
+                background: red;
+            }
+            td.off {
+                background: blue;
+            }
+            td.real-on {
+                border: 10px solid red;
+            }
+            td.real-off {
+                border: 10px solid blue;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td id="0-1"></td><td id="1-1"></td><td id="2-1"></td><td id="3-1"></td><td id="4-1"></td><td id="5-1"></td>
+            </tr>
+            <tr>
+                <td id="0-0"></td><td id="1-0"></td><td id="2-0"></td><td id="3-0"></td><td id="4-0"></td><td id="5-0"></td>
+            </tr>
+        </table>
+    </body>
+</html>
