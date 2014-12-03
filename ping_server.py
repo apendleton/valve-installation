@@ -123,6 +123,7 @@ def status():
 @app.route('/reset')
 def reset():
     kill_stale_fakes()
+    return jsonify({'success': True})
 
 @sockets.route('/changes') 
 def changes(ws):
