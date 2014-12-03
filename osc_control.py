@@ -1,6 +1,13 @@
 import json, requests
 from websocket import create_connection
 
+from pythonosc import osc_message_builder
+from pythonosc import udp_client
+
+from oset import oset
+
+QLAB_IP = '192.168.2.110'
+
 def get_states(distances):
     states = ['off'] * 6
     for i, stick in enumerate(distances):
@@ -10,11 +17,36 @@ def get_states(distances):
             states[i] = 'low'
     return states
 
-def trigger_state(stick, state):
+osc_client = udp_client.UDPClient(QLAB_IP, 53000)
+def send_osc(qnum):
+    print("sending q", qnum)
+    msg = osc_message_builder.OscMessageBuilder(address = '/cue/' + str(qnum) + '/start')
+    msg = msg.build()
+    osc_client.send(msg)
+
+offsets = {'high': (10001, 10002), 'low': (10003, 10004), 'off': (10005,)}
+state_history = oset()
+def trigger_state(stick, state, sound_only=False):
     print('setting', stick, 'to', state)
+    soffsets = offsets[state][:1] if sound_only else offsets[state]
+    for o in soffsets:
+        send_osc((stick * 5) + o)
+
+    if state in ('low', 'high'):
+        state_tuple = (stick, state)
+        state_history.discard(state_tuple)
+        state_history.add(state_tuple)
+    else:
+        state_history.discard((stick, 'low'))
+        state_history.discard((stick, 'high'))
+
+        # re-trigger the last one
+        if len(state_history) > 0:
+            trigger_state(*state_history[-1], sound_only=True)
 
 def all_off():
     print('setting everything to off')
+    send_osc(10031)
 
 current_states = ['off'] * 6
 def update_osc():

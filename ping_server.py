@@ -75,13 +75,13 @@ def arduino_thread():
                     # this is when we fake the off state if necessary
 
                     # are the ones in any direction hot?
-                    if (stick < 5 and any(real_on[stick + 1])) or (stick > 0 and any(real_on[stick - 1])):
+                    if (stick < 5 and any(real_on[stick + 1])) or (stick > 0 and any(real_on[stick - 1])) or real_on[stick][0 if height == 1 else 1]:
                         fake_on[stick][height] = False
                     else:
                         # otherwise we keep it hot
                         # and if it's on the ends and nothing else is on, we set a timer
                         if stick in (0, 5) and not any(reduce(operator.add, real_on)) and not any(reduce(operator.add, fake_on[1:5])):
-                            kill_thread = gevent.spawn_later(3, kill_stale_fakes)
+                            kill_thread = gevent.spawn_later(2, kill_stale_fakes)
 
 
                 pending_changes.insert(0, (stick, height))
