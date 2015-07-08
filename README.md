@@ -1,0 +1,2 @@
+# valve-installation
+This repo contains various pieces of code related to a temporary installation art project shown at Dance Place in Washington, DC, in early 2015. The code in its entirety is probably not useful outside that environment, but it involved Arduinos sensing the location of audience members, and controlling a set of solenoid water valves that "rained" onto a clear roof over audience members' heads, as well as OSC-driven lighting and sound effects, all orchestrated by a set of Python scripts.
